@@ -6,7 +6,6 @@ import numpy as np
 import asyncio
 import cv2
 
-loop = asyncio.get_event_loop()
 app = Flask(__name__)
 
 

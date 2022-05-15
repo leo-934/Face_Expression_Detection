@@ -2,8 +2,8 @@ import cv2
 
 def getExpression(img):
     recognizer = cv2.face.LBPHFaceRecognizer_create()
-    recognizer.read('backend/detection/model/model.yml')
-    cascadePath = "backend/detection/model/haarcascade_frontalface_default.xml"
+    recognizer.read('Backend/detection/model/model.yml')
+    cascadePath = "Backend/detection/model/haarcascade_frontalface_default.xml"
     faceCascade = cv2.CascadeClassifier(cascadePath)
 
     id = 0

@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
 import Webcam from "react-webcam";
+import ImageUploading from "react-images-uploading";
 import toast, { Toaster } from "react-hot-toast";
 import "./App.css";
 import { dataToFile } from "./actions";
@@ -9,10 +10,37 @@ export default function App() {
   const webcamRef = useRef(null);
   const captureRef = useRef(null);
 
+  const [mode, setMode] = useState(0);
+
   const [imgSrc, setImgSrc] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const [emotion, setEmotion] = useState(0);
+  const [uploadImage, setUploadImage] = useState(null);
+  const [uploadUrl, setUploadUrl] = useState(null);
+
+  const handleUploading = (image) => {
+    setUploadImage(image);
+    setUploadUrl(image[0].data_url);
+  };
+
+  const sendData = () => {
+    const file = dataToFile(uploadUrl, "Face");
+    const data = new FormData();
+    data.append("file", file, file.name);
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+
+    axios
+      .post("http://127.0.0.1:81/getExpression", data, config)
+      .then((response) => {
+        setImgSrc("./emojis/" + response.data.data + ".svg");
+      });
+  };
 
   const capture = useCallback(() => {
     // Something wrong with the camera
@@ -21,7 +49,7 @@ export default function App() {
       return;
     }
     const imgSrc = webcamRef.current.getScreenshot();
-    setImgSrc(imgSrc);
+
     const file = dataToFile(imgSrc, "Face");
     const data = new FormData();
     data.append("file", file, file.name);
@@ -32,13 +60,13 @@ export default function App() {
         "Access-Control-Allow-Origin": "*",
       },
     };
+
     axios
       .post("http://127.0.0.1:81/getExpression", data, config)
       .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {});
-  }, [webcamRef, setImgSrc]);
+        setImgSrc("./emojis/" + response.data.data + ".svg");
+      });
+  }, [webcamRef]);
 
   const startTimer = () => {
     // Get a screenshot every second
@@ -57,39 +85,68 @@ export default function App() {
     <div className="app">
       <Toaster />
       <div className="container">
-        {/* Camera */}
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          className="web-camere"
-        />
+        {mode ? (
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            className="web-camera"
+          />
+        ) : (
+          <ImageUploading
+            value={uploadImage}
+            onChange={handleUploading}
+            dataURLKey="data_url"
+          >
+            {({ imageList, onImageUpload }) => (
+              <div className="upload">
+                <button className="upload-button" onClick={onImageUpload}>
+                  Upload or drag an image here.
+                </button>
+                {imageList.map((image, index) => (
+                  <img
+                    className="upload-image"
+                    key={index}
+                    src={image.data_url}
+                    alt="img"
+                  />
+                ))}
+              </div>
+            )}
+          </ImageUploading>
+        )}
 
-        {/* Button */}
+        {mode ? (
+          <button
+            onClick={() => {
+              if (isGenerating) {
+                clearTimer();
+              } else {
+                startTimer();
+              }
+              setIsGenerating(!isGenerating);
+            }}
+          >
+            {isGenerating ? "Stop" : "Start"}
+          </button>
+        ) : (
+          <button onClick={sendData}>Confirm</button>
+        )}
+
         <button
           onClick={() => {
-            if (isGenerating) {
-              clearTimer();
-            } else {
-              startTimer();
-            }
-            setIsGenerating(!isGenerating);
+            setMode(1 - mode);
           }}
         >
-          {isGenerating ? "Stop" : "Start"}
+          Mode
         </button>
 
-        {/* Result */}
-        {isGenerating ? (
-          imgSrc ? (
-            <div className="result">
-              <img src={imgSrc} alt="img" />
-            </div>
-          ) : (
-            <div className="result">Generating...</div>
-          )
+        {imgSrc ? (
+          <div className="result">
+            <img src={imgSrc} alt="img" />
+          </div>
         ) : (
-          <div className="result">Waiting...</div>
+          <div className="result">Current mode: {mode ? "Video" : "Image"}</div>
         )}
       </div>
     </div>

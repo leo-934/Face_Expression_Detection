@@ -6,7 +6,7 @@ export const dataToFile = (data, fileName) => {
     const u8arr = new Uint8Array(n)
     while (n) {
         u8arr[n - 1] = bstr.charCodeAt(n - 1)
-        n -= 1 // to make eslint happy
+        n -= 1
     }
     return new File([u8arr], fileName, { type: mime })
 }

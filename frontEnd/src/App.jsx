@@ -38,7 +38,9 @@ export default function App() {
     axios
       .post("http://127.0.0.1:81/getExpression", data, config)
       .then((response) => {
-        setImgSrc("./emojis/" + response.data.data + ".svg");
+        const res = response.data.data;
+        if (res === 0 || res === "unknown") setImgSrc("./noFace.jpg");
+        else setImgSrc("./emojis/" + response.data.data + ".svg");
       });
   };
 
@@ -64,7 +66,11 @@ export default function App() {
     axios
       .post("http://127.0.0.1:81/getExpression", data, config)
       .then((response) => {
-        setImgSrc("./emojis/" + response.data.data + ".svg");
+        const res = response.data.data;
+        if (res === 0 || res === "unknown") {
+          setImgSrc("./noFace.jpg");
+          console.log(imgSrc);
+        } else setImgSrc("./emojis/" + response.data.data + ".svg");
       });
   }, [webcamRef]);
 
@@ -72,7 +78,7 @@ export default function App() {
     // Get a screenshot every second
     const timer = setInterval(() => {
       capture();
-    }, 5000);
+    }, 3000);
     captureRef.current = timer;
   };
 

@@ -1,5 +1,3 @@
-from re import I
-import re
 from urllib import response
 import detection.expression as ex
 from flask import Flask
@@ -7,7 +5,6 @@ from flask import request
 from flask import jsonify, make_response
 from flask_cors import CORS
 import numpy as np
-import asyncio
 import cv2
 
 app = Flask(__name__)

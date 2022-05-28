@@ -39,9 +39,16 @@ export default function App() {
       .post("http://127.0.0.1:81/getExpression", data, config)
       .then((response) => {
         const res = response.data.data;
-        if (res === 0 || res === "unknown") setImgSrc("./noFace.jpg");
-        else setImgSrc("./emojis/" + response.data.data + ".svg");
-      });
+        console.log(res);
+        if (res === 0 || res === "unknown") {
+          setImgSrc("./noFace.jpg");
+        }
+        else {
+          setImgSrc("./emojis/" + response.data.data + ".svg");
+        }
+      }).catch((err) => {
+        toast.error('Something went wrong. Please try again.');
+      })
   };
 
   const capture = useCallback(() => {
@@ -69,9 +76,12 @@ export default function App() {
         const res = response.data.data;
         if (res === 0 || res === "unknown") {
           setImgSrc("./noFace.jpg");
-          console.log(imgSrc);
-        } else setImgSrc("./emojis/" + response.data.data + ".svg");
-      });
+        } else {
+          setImgSrc("./emojis/" + response.data.data + ".svg");
+        }
+      }).catch((err) => {
+        toast.error('Something went wrong. Please try again.');
+      })
   }, [webcamRef]);
 
   const startTimer = () => {
@@ -85,7 +95,7 @@ export default function App() {
   const clearTimer = () => {
     // Stop collecting screenshots
     clearInterval(captureRef.current);
-  };
+  };  
 
   return (
     <div className="app">

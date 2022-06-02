@@ -25,7 +25,7 @@ async def handle_pic_get_expression(request):
         res = ex.getExpression(img)
         print(res)
     except Exception as e:
-        print(e)
+        print('err: ', e)
         return make_response(jsonify({'data': None, 'status': 0, 'error': 'Something is wrong'}), 0)
 
     response = jsonify({'data': res, 'status': 200, 'error': None})

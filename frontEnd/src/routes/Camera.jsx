@@ -9,7 +9,7 @@ export default function App() {
   const webcamRef = useRef(null);
   const captureRef = useRef(null);
 
-  const [imgSrc, setImgSrc] = useState('./noFace.jpg');
+  const [imgSrc, setImgSrc] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
   const capture = () => {
@@ -36,7 +36,7 @@ export default function App() {
       .then((response) => {
         const res = response.data.data;
         if (res === 0 || res === 'unknown') {
-          setImgSrc('./noFace.jpg');
+          setImgSrc('');
         } else {
           setImgSrc('./emojis/' + response.data.data + '.svg');
         }
@@ -86,7 +86,11 @@ export default function App() {
           </div>
 
           <div className="w-96 h-96">
-            <img src={imgSrc} alt="" />
+            {
+              imgSrc ?
+                <img src={imgSrc} alt="" /> :
+                'No Face Detected'
+            }
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 
 export default function App() {
-  const [imgSrc, setImgSrc] = useState('./noFace.jpg');
+  const [imgSrc, setImgSrc] = useState('');
 
   const [uploadImage, setUploadImage] = useState(null);
   const [uploadUrl, setUploadUrl] = useState(null);
@@ -33,14 +33,9 @@ export default function App() {
       .then((response) => {
         const res = response.data.data;
         console.log(res);
-        if (res === 0 || res === 'unknown') {
-          setImgSrc('./noFace.jpg');
-        }
-        else {
-          setImgSrc('./emojis/' + response.data.data + '.svg');
-        }
+        setImgSrc('./emojis/' + response.data.data + '.svg');
       }).catch((err) => {
-        toast.error('Something went wrong. Please try again.');
+        toast.error(err);
       });
   };
 
@@ -61,7 +56,7 @@ export default function App() {
             {({ imageList, onImageUpload }) => (
               <div className="w-96 flex flex-col justify-center items-center">
                 <div
-                  className="text-lg font-bold mb-6"
+                  className="text-lg font-bold mb-6 cursor-pointer"
                   onClick={onImageUpload}
                 >
                   Upload image here.
@@ -86,7 +81,11 @@ export default function App() {
           </div>
 
           <div className="w-96 h-96">
-            <img src={imgSrc} alt="" />
+            {
+              imgSrc ?
+                <img src={imgSrc} alt="" /> :
+                'No Face Detected'
+            }
           </div>
         </div>
       </div>
